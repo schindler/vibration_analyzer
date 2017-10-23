@@ -13,7 +13,7 @@ def create_db(basename):
     cur = con.cursor()
 
     try:
-        cur.execute("CREATE TABLE Data (id INTEGER primary key not null, x REAL, y REAL, z REAL, t INTEGER)")
+        cur.execute("CREATE TABLE Data (id INTEGER primary key not null, x REAL, y REAL, z REAL, t REAL)")
         con.commit()
     except sql.OperationalError:
         pass
@@ -33,7 +33,7 @@ class Store(object):
             Adds a new record
             >>> Store().add([1.5,2,3], 26)
             >>> Store().last()[4]
-            26
+            26.0
         """
         cur = self.connection.cursor()
         cur.execute("INSERT INTO Data VALUES (NULL, ?, ?, ?, ?)", 
