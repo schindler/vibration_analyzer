@@ -9,16 +9,14 @@ import mpu6050
 if __name__ == "__main__":
     STORE = data.Store()
     SENSOR = mpu6050.Sensor()
-    DELAY = 1.0/100.0
+    DELAY = 1.0/1000.0
 
     start = time.time()     
     rows = []
 
     for i in xrange(0,100):
         rows.append(SENSOR.data())
-        g = time.time()-start
-        print g, DELAY
-        time.sleep(DELAY-(time.time()-start))
+        time.sleep(DELAY)
 
     print time.time() - start
      
