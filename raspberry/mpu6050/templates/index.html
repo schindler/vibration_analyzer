@@ -1,0 +1,18 @@
+$def with (temperature)
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="60">
+  <title>MPU6050 Temperature</title>
+  <meta name="description" content="Temperature from MPU6050 by using PI 3 (I2C)">
+  <meta name="author" content="Fernando Schindler">
+</head>
+<body>
+$if temperature:
+    <div style="height:200px;width:400px;background:#002244;position:fixed;top:50%;left:50%;margin-top:-100px; margin-left:-200px"><p/><center><font size="18" color=white>$temperature&deg;C</font></center></div>
+$else:
+    <div>-- Error --</div>
+</body>
+</html>
