@@ -13,7 +13,7 @@ def create_db(basename):
     cur = con.cursor()
 
     try:
-        cur.execute("CREATE TABLE Data (id INTEGER primary key not null, x REAL, y REAL, z REAL, t REAL)")
+        cur.execute("CREATE TABLE Data (id INTEGER primary key not null, x REAL, y REAL, z REAL, t REAL, timestamp DATETIME)")
         con.commit()
     except sql.OperationalError:
         pass
@@ -27,19 +27,32 @@ class Store(object):
     def __init__(self):
         self.connection = create_db("datastore.db")
         self.connection.isolation_level = None
+        self.cursor = self.connection.cursor()
+        self.cursor.execute("begin")
 
-    def add(self, acceleration, temperature):
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.connection.commit()
+        self.connection.disconnect()
+
+    def commit(self):
+        """
+            commit
+        """
+        self.connection.commit()
+        self.cursor = self.connection.cursor()
+        self.cursor.execute("begin")
+
+    def add(self, row):
         """
             Adds a new record
-            >>> Store().add([1.5,2,3], 26)
-            >>> Store().last()[4]
+            >>> s = Store()
+            >>> s.add((1.5,2,3,26))
+            >>> s.commit()
+            >>> s.last()[4]
             26.0
         """
-        cur = self.connection.cursor()
-        cur.execute("INSERT INTO Data VALUES (NULL, ?, ?, ?, ?)", 
-            (acceleration[0], acceleration[1], acceleration[2], temperature,))
-        cur = None
-        self.connection.commit()
+        self.cursor.execute("INSERT INTO Data VALUES (NULL, ?, ?, ?, ?, STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'))", row)
+
 
     def add_all(self, rows):
         """
@@ -50,22 +63,17 @@ class Store(object):
             >>> r = [(1,2,3,21),(5,6,7,22),(8,9,10,23)]
             >>> s.add_all(r)
         """
-        cur = self.connection.cursor()
         try:
-            cur.execute("begin")
             for row in rows:
-                cur.execute("INSERT INTO Data VALUES (NULL, ?, ?, ?, ?)", row)
-            cur.execute("commit")
+                self.add(row)
+            self.commit()
         except sql.Error as error:
-            cur.execute("rollback")
+            cursor.execute("rollback")
             raise error
-        finally:
-            cur = None
 
     def last(self):
         """
             Gets last record
         """
-        cur = self.connection.cursor()
-        return cur.execute("SELECT * from Data order by id desc limit 1").fetchone()
+        return self.cursor.execute("SELECT * from Data order by id desc limit 1").fetchone()
           
