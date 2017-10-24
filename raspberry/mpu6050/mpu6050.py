@@ -11,8 +11,9 @@ class Sensor(object):
     """
         Basic configuration
         https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf
-
-        GPIO Raspberry Pi 3 V2
+        Add /boot/config.txt
+        dtparam=i2c_baudrate=400000
+        GPIO Raspberry Pi 3
         Pin 1 - 3.3V connect to VCC
         Pin 3 - SDA connect to SDA
         Pin 5 - SCL connect to SCL
