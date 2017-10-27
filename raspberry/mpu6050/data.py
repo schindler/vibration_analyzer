@@ -30,6 +30,7 @@ class Store(object):
         self.connection.isolation_level = None
         self.session_id = self.session()
         assert self.session_id >= 0, "Init Store failure!"
+        self.commit()
         
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -42,8 +43,7 @@ class Store(object):
         """    
         self.cursor = self.connection.cursor()  
         self.cursor.execute("INSERT INTO Session VALUES (NULL, STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'))")
-        self.commit()
-        return self.cursor.execute("SELECT id from Session order by id desc limit 1").fetchone()[0]
+        return self.cursor.lastrowid
 
     def commit(self):
         """

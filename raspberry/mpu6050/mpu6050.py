@@ -7,6 +7,8 @@ except ImportError:
     #Probably running test cases
     import mocksmbus as smbus
 
+from time import sleep
+
 class Sensor(object):
     """
         Basic configuration
@@ -23,13 +25,17 @@ class Sensor(object):
     def __init__(self, adr=0x68, V=1):
         self.power_mgmt_1 = 0x6b
         self.power_mgmt_2 = 0x6c
+        self.gyroscope_config_scale = 0x1b
         self.acceleration_config_scale = 0x1C
         self.address = adr
         self.bus = smbus.SMBus(V)
         assert self.read(0x75) == 104, "MPU6050 Not Found"
 
         self.bus.write_byte_data(adr, self.power_mgmt_1, 0)
+        sleep(0.1)
+        
         self.bus.write_byte_data(adr, self.acceleration_config_scale, 0)
+        self.bus.write_byte_data(adr, self.gyroscope_config_scale, 0)
 
     def read(self, reg):
         """
@@ -66,4 +72,6 @@ class Sensor(object):
         """
           Reads acceleration and temperature
         """
-        return (self.read_short(59), self.read_short(61), self.read_short(63), self.temperature())
+        tmp = self.acceleration()
+        tmp.append(self.temperature())
+        return tuple(tmp)

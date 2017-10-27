@@ -7,7 +7,7 @@ import mpu6050
 if __name__ == "__main__":
     STORE = data.Store()
     SENSOR = mpu6050.Sensor()
-    DELAY = 1.0/1000.0
+    DELAY = .001
     while True: 
 
         for i in xrange(0, 1000):
